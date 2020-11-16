@@ -41,6 +41,12 @@ spr_deca = 80 ; 2 bytes
 
 c_dir_x2 = 82
 c_dir_y2 = 83
+spr_loop = 84
+
+sprite_ptr = 85 ;2 bytes
+sprite_ptr_mask = 87 ;2 bytes
+object_x = 89
+object_y = 90
 
 
 temp16 = $af

@@ -1,31 +1,59 @@
 ;***********************************
 ; Draw Sprite
 ;
-; there is 16 sprite possible by section
+; there is 15 sprite possible by section
 ; if distance > 0 then draw it
 ; Items have 1 sprite
 ; monster has 2 sprite x 4 direction + 1 attack 1 hit and 2 dieing      
-
-processSprite:
-    lda obj_dist+1
-    beq prs_done
-    ;get the steps
+processSprites:
+    lda #1
+    sta spr_loop
+-   ldy spr_loop
+    cpy #16
+    beq pss_done
+    lda obj_dist,y  ;copy all data into slot 0
+    beq +
     sta spr_dist
-    lda obj_col_hit+1
+    lda obj_pos_hitx,y 
+    sta matrixPointX
+    lda obj_pos_hity,y 
+    sta matrixPointY
+    lda obj_col_hit,y  
     asl
     sta spr_col
+        ;do the object only ptr and data
+    lda objectDataZone,Y
+    tay
+    lda $300,Y          ;object X
+    sta object_x
+    lda $301,Y          ;object Y
+    sta object_y
+    lda $302,Y          ;object sprite ptr
+    sta sprite_ptr_mask
+    ora #16             ;image data is 16 bytes later
+    sta sprite_ptr
+    lda $303,Y         
+    sta sprite_ptr_mask+1
+    sta sprite_ptr+1
 
+    jsr processSprite
++   inc spr_loop
+    jmp -
+pss_done:
+    rts
+
+processSprite:
     ;finc angle from table
     lda object_x
     sec
-    sbc obj_pos_hitx+1
+    sbc matrixPointX
     clc
     adc #8
     sta temp8
 
     lda object_y
     sec
-    sbc obj_pos_hity+1
+    sbc matrixPointY
     clc
     adc #8
     asl
@@ -58,10 +86,6 @@ processSprite:
     sta spr_deca+1
     sta matrixPointX+1      ;clear low part of cfloat
     sta matrixPointY+1
-    lda obj_pos_hitx+1
-    sta matrixPointX        ;set position x and y
-    lda obj_pos_hity+1
-    sta matrixPointY
 
 prs_loop1:
     lda matrixPointX
@@ -85,7 +109,7 @@ prs_onit:
     asl spr_dist+1
     rol
     sta spr_dist
-    
+
     jsr spriteDarw
 prs_done:
     rts
@@ -194,33 +218,38 @@ spriteDarw:
     sbc spr_deca
     sta spr_deca
 
+    ldx spr_col ;get the current col in X
+
 -   cmp #0      ;if lower than 0 shift col by 2
     bpl +
-    inc spr_col
-    inc spr_col
+    inx         ;increase col
+    lda spr_deca+1
     clc
-    adc #2
+    adc tex_step1+1     ;add text step to it per col increased
+    sta spr_deca+1
+    lda spr_deca
+    adc tex_step1
     sta spr_deca
     jmp -
 
 +
 -   lda tex_step1+1
     clc
-    adc temp8+1
+    adc temp8+1         ;go left a bit to start the pixel at right col
     sta temp8+1
     lda tex_step1
     adc temp8
     sta temp8
-    dec spr_col    
+    dex                 ;decrease col    
     cmp spr_deca
     bcc -
 
-    lda spr_col
+    txa             ;test for whole col
     and #1
     bne -           ;only on x2 col
 
     sec
-    lda spr_deca+1
+    lda spr_deca+1  ;find the perfect pixel to draw
     sbc temp8+1
     sta temp8+1
     lda spr_deca
@@ -228,7 +257,7 @@ spriteDarw:
     sta temp8
 
                ;start drawing it
-    lda spr_col
+    txa
     lsr
     tax             ; X = colon
 
@@ -256,10 +285,10 @@ spr_loop1:
 
     cpx #38
     bcs +           ;skip, outside of screen
-    lda z_depth,x
-    cmp spr_dist       ;zdepth
-    bmi +
-
+    lda spr_dist 
+    cmp z_depth,x      ;zdepth
+    bpl +
+    sta z_depth,x       ;store new z value
     
     lda textureMask,y
     sta spr_pix_mask2
@@ -288,21 +317,19 @@ spriteDrawLine:
     ldy spr_dist
     lda Text_Start,y        ;get starting pos
     bpl +
-    and #$f
-    sta spr_linePos
-    lda #0
+    and #$f                 ;keep pixel value
+    sta spr_linePos         ;store in line pos
+    lda #0                  ;we start at line 0
 +
     lsr                     ;divide by 2
     sta current_line
     lda #0
-    bcc +
-    lda #1
-+
-    sta spr_cline
+    rol                     ;bring last bit in A
+    sta spr_cline           ;save it for later
 sdl_loop1:
     ;pixel 1
 
-    jsr GetPixs             ;get current pixel
+    jsr GetPixs             ;get current pixels
 
     ldy spr_linePos
     lda spr_cline
@@ -310,14 +337,14 @@ sdl_loop1:
 
     lda spr_pixp1
     cmp #8
-    bcs +           ;skip over if outsite of pixmap
-    lda spriteTestMask,y    ;load transparency
+    bcs +                   ;skip over if outsite of pixmap
+    lda (sprite_ptr_mask),y    ;load transparency
     and spr_pix_mask1
     beq +                   ;if visible or not
     lda current_pixs        ;clear bit
     and #$e
     sta current_pixs
-    lda spriteTest,y
+    lda (sprite_ptr),y
     and spr_pix_mask1       ;pixel color
     beq +
     inc current_pixs        ;set the bit
@@ -325,13 +352,13 @@ sdl_loop1:
     lda spr_pixp2
     cmp #8
     bcs +           ;skip over if outsite of pixmap
-    lda spriteTestMask,y    ;load transparency
+    lda (sprite_ptr_mask),y    ;load transparency
     and spr_pix_mask2
     beq +                   ;if visible or not
     lda current_pixs        ;clear bit
     and #$D
     sta current_pixs
-    lda spriteTest,y
+    lda (sprite_ptr),y
     and spr_pix_mask2       ;pixel color
     beq +
     lda current_pixs        ;set the bit
@@ -358,13 +385,13 @@ sdl_jmp2:
     lda spr_pixp1
     cmp #8
     bcs +           ;skip over if outsite of pixmap
-    lda spriteTestMask,y    ;load transparency
+    lda (sprite_ptr_mask),y    ;load transparency
     and spr_pix_mask1
     beq +                   ;if visible or not
     lda current_pixs        ;clear bit
     and #$b
     sta current_pixs
-    lda spriteTest,y
+    lda (sprite_ptr),y
     and spr_pix_mask1       ;pixel color
     beq +
     lda current_pixs        ;set the bit
@@ -374,13 +401,13 @@ sdl_jmp2:
     lda spr_pixp2
     cmp #8
     bcs +           ;skip over if outsite of pixmap
-    lda spriteTestMask,y    ;load transparency
+    lda (sprite_ptr_mask),y    ;load transparency
     and spr_pix_mask2
     beq +                   ;if visible or not
     lda current_pixs        ;clear bit
     and #$7
     sta current_pixs
-    lda spriteTest,y
+    lda (sprite_ptr),y
     and spr_pix_mask2       ;pixel color
     beq +
     lda current_pixs        ;set the bit
@@ -389,8 +416,8 @@ sdl_jmp2:
 +
 
     jsr PutPixs         ;store result
-    lda #0
-    sta spr_cline
+
+    lsr spr_cline       ;clear it
 
     inc current_line    ;goes next line
     lda current_line
@@ -411,38 +438,3 @@ sdl_jmp2:
     rts
 
 
-spriteTestMask:
-!by %00011000
-!by %00111100
-!by %01111110
-!by %01111110
-!by %00111100
-!by %11111111
-!by %11111111
-!by %11111111
-!by %11111111
-!by %00111100
-!by %00111100
-!by %01111110
-!by %11111111
-!by %11111111
-!by %11100111
-!by %11100111
-
-spriteTest:
-!by %00000000
-!by %00011000
-!by %00111100
-!by %00111100
-!by %00011000
-!by %00000000
-!by %11111111
-!by %11111111
-!by %00011000
-!by %00011000
-!by %00011000
-!by %00111100
-!by %01100110
-!by %01100110
-!by %11000011
-!by %11000011

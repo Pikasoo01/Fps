@@ -92,7 +92,7 @@ main_loop1:
 	
 	;draw
 	jsr Draw3dScreen
-	jsr processSprite
+	jsr processSprites
 
 	jsr FlipScreen
 	
@@ -113,6 +113,8 @@ interupt_handler
 CopyFakeMap:
 	ldy #0
 -	lda fmdata,y
+	sta $200,y
+	lda fmdata+256,y
 	sta $300,y
 	iny
 	bne -
@@ -122,6 +124,7 @@ CopyFakeMap:
 !src "3dhelper.asm"
 !src "3d.asm"
 !src "sprite.asm"
+!src "data.asm"
 
 ;fake map data
 fmdata:
@@ -142,5 +145,8 @@ fmdata:
 !by 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
 !by 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 
-object_x !by (4*8)+4
-object_y !by (2*8)+4
+;object on map
+!by 0,0,0,0,0,0,0,0		;empty
+
+!by (4*8)+4, (2*8)+4	;x,y
+!wo spriteTestMask
