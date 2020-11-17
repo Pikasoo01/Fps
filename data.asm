@@ -366,6 +366,60 @@ textureMask:
 objectDataZone:
 !by 0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128
 
+NumberData:
+;0
+!by $55,$49
+!by $5d,$5d
+!by $4a,$4b
+!by 0,0
+;1
+!by $20,$6e
+!by $20,$5d
+!by $20,$71
+!by 0,0
+;2
+!by $55,$49
+!by $55,$4b
+!by $6D,$7D
+!by 0,0
+;3
+!by $55,$49
+!by $20,$73
+!by $4a,$4b
+!by 0,0
+;4
+!by $55,$20
+!by $6d,$73
+!by $20,$71
+!by 0,0
+;5
+!by $70,$6e
+!by $6d,$49
+!by $4a,$4b
+!by 0,0
+;6
+!by $55,$49
+!by $6b,$49
+!by $4a,$4b
+!by 0,0
+;7
+!by $70,$6e
+!by $20,$5d
+!by $20,$4b
+!by 0,0
+;8
+!by $55,$49
+!by $6b,$73
+!by $4a,$4b
+!by 0,0
+;9
+!by $55,$49
+!by $4a,$73
+!by $4a,$4b
+!by 0,0
+;empty
+!by $20,$20,$20,$20,$20,$20
+
 ;***************************************************
 ; texture
 !align 15, 0		;align to 256 block so its faster
@@ -387,7 +441,7 @@ textureTest:
 !by %10010001
 !by %11111111
 
-!align 255, 0		;align to 256 block so its faster
+!align 31, 0		;align to 256 block so its faster
 ;***************************************************
 ; sprite
 

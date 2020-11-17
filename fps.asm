@@ -76,10 +76,24 @@ setup
 	bne -
         
 	jsr CopyFakeMap
+
+	;init pannel
+	lda #100
+	ldy #2
+	jsr PrintValue
+
+	lda #100
+	ldy #20
+	jsr PrintValue
+
+	lda #0
+	ldy #30
+	jsr PrintValue
+
+
         
 main_loop1:
 	;get key for motion
-	inc $770
 	inc playerDir
 	;inc playerDir
 	;inc playerDir
@@ -95,6 +109,10 @@ main_loop1:
 	jsr processSprites
 
 	jsr FlipScreen
+
+	lda playerDir
+	ldy #2
+	jsr PrintValue
 	
 	jmp main_loop1
 	
@@ -124,6 +142,7 @@ CopyFakeMap:
 !src "3dhelper.asm"
 !src "3d.asm"
 !src "sprite.asm"
+!src "2d.asm"
 !src "data.asm"
 
 ;fake map data
