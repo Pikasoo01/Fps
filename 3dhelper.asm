@@ -71,6 +71,9 @@ fam_test:
 	sta matrixDist+1
 	bcc +
 	inc matrixDist
+	lda matrixDist
+	cmp #60
+	beq fam_tooFar
 +
 	lda scan_text_xy
 	beq -					;if no wall crossed dont test
@@ -113,6 +116,10 @@ fam_goin:
 	sta z_depth,X
 	;sta matrixDist
 	rts
+fam_tooFar:
+	lda #0
+	sta z_depth,X
+	rts
 	
 ;********************************************
 ;
@@ -137,27 +144,7 @@ getWall:
 gw_ptr = *-2
 	rts
 	
-	
-;********************************************
-;
-; whaitForKey
-;
-; just whait for a key pressed
-;
 
-whaitForKey:
-	lda #0
-	sta $DC00
-	lda $DC01
-	cmp #$ff
-	beq whaitForKey
-wfk_loop
-	lda #0
-	sta $DC00
-	lda $DC01
-	cmp #$ff
-	bne wfk_loop
-	rts
 	
 	
 ;*********************************************

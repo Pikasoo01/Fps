@@ -47,10 +47,26 @@ sprite_ptr = 85 ;2 bytes
 sprite_ptr_mask = 87 ;2 bytes
 object_x = 89
 object_y = 90
+rotation_speed = 91 
 
+
+Keyboard_f1 = 160
+Keyboard_f3 = 161
+Keyboard_f5 = 162
+Keyboard_f7 = 163
+Keyborad_left = 164
+Keyboard_right = 165
+Keyboard_up = 166
+Keyboard_down = 167
+Keyboard_action = 168
+Keyboard_1 = 169
+Keyboard_2 = 170
+Keyboard_3 = 171
+Keyboard_4 = 172
 
 temp16 = $af
 temp8 = $ae
+K_tempVar = $ae
 obj_dist = $B0
 obj_col_hit = $c0
 obj_pos_hitx = $d0

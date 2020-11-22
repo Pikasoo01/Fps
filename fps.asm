@@ -94,11 +94,10 @@ setup
         
 main_loop1:
 	;get key for motion
-	inc playerDir
-	;inc playerDir
-	;inc playerDir
+	jsr ScanKeys
 
 	;move player
+	jsr PlayerTick
 	
 	;do action
 	
@@ -143,16 +142,18 @@ CopyFakeMap:
 !src "3d.asm"
 !src "sprite.asm"
 !src "2d.asm"
+!src "keyboard.asm"
+!src "player.asm"
 !src "data.asm"
 
 ;fake map data
 fmdata:
 !by 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 !by 1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1
-!by 1,0,0,0,16,1,0,1,1,1,0,0,0,0,0,1
-!by 1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,1
-!by 1,1,1,1,1,0,0,1,0,1,1,1,1,1,1,1
-!by 1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1
+!by 1,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1
+!by 1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1
+!by 1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1
+!by 1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1
 !by 1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1
 !by 1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1
 !by 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1
@@ -168,4 +169,4 @@ fmdata:
 !by 0,0,0,0,0,0,0,0		;empty
 
 !by (4*8)+4, (2*8)+4	;x,y
-!wo spriteTestMask
+!wo spriteTestMask+32
