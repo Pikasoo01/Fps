@@ -9,7 +9,6 @@ PlayerTick:
     cmp #6                 ;not over max
     bpl +
     inc rotation_speed      ;increase speed
-    inc rotation_speed
 +   
 pt_noRight:
 
@@ -20,7 +19,6 @@ pt_noRight:
     cmp #$fa
     bmi +
     dec rotation_speed      ;decrease speed
-    dec rotation_speed
 +   
 pt_noLeft:
 
@@ -74,6 +72,23 @@ doOneStep:
 	sta playerPosX+1
 	bcc +
 	inc playerPosX
+    lda playerPosX          ;test if we hit pixel 4
+    and #$7
+    cmp #4
+    bne +
+    lda playerPosX          ;we are on pix 4
+    clc
+    adc #8                  ;look for wall in that direction
+    sta matrixPointX
+    lda playerPosY
+    sta matrixPointY
+    jsr getWall
+    and #15                 ;do we have one?
+    beq +
+    lda playerPosX          ;yes, stay in previous pixel
+    and #$f8
+    ora #3
+    sta playerPosX
 +	jmp dos_doY
 
 dos_negx:
@@ -82,6 +97,23 @@ dos_negx:
 	sta playerPosX+1
 	bcs +
 	dec playerPosX
+    lda playerPosX          ;test if we hit pixel 4
+    and #$7
+    cmp #4
+    bne +
+    lda playerPosX          ;we are on pix 4
+    sec
+    sbc #8                  ;look for wall in that direction
+    sta matrixPointX
+    lda playerPosY
+    sta matrixPointY
+    jsr getWall
+    and #15                 ;do we have one?
+    beq +
+    lda playerPosX          ;yes, stay in previous pixel
+    and #$f8
+    ora #5
+    sta playerPosX
 +
 dos_doY:
 
@@ -92,6 +124,23 @@ dos_doY:
 	sta playerPosY+1
 	bcc +
 	inc playerPosY
+    lda playerPosY          ;test if we hit pixel 4
+    and #$7
+    cmp #4
+    bne +
+    lda playerPosY          ;we are on pix 4
+    clc
+    adc #8                  ;look for wall in that direction
+    sta matrixPointY
+    lda playerPosX
+    sta matrixPointX
+    jsr getWall
+    and #15                 ;do we have one?
+    beq +
+    lda playerPosY          ;yes, stay in previous pixel
+    and #$f8
+    ora #3
+    sta playerPosY
 +	rts
 dos_negy:
 	clc
@@ -99,4 +148,21 @@ dos_negy:
 	sta playerPosY+1
 	bcs +
 	dec playerPosY
+    lda playerPosY          ;test if we hit pixel 4
+    and #$7
+    cmp #4
+    bne +
+    lda playerPosY          ;we are on pix 4
+    sec
+    sbc #8                  ;look for wall in that direction
+    sta matrixPointY
+    lda playerPosX
+    sta matrixPointX
+    jsr getWall
+    and #15                 ;do we have one?
+    beq +
+    lda playerPosY          ;yes, stay in previous pixel
+    and #$f8
+    ora #5
+    sta playerPosY
 +   rts

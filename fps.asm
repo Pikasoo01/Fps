@@ -87,6 +87,7 @@ setup
 	jsr PrintValue
 
 	lda #0
+	sta counter
 	ldy #30
 	jsr PrintValue
 
@@ -98,8 +99,13 @@ main_loop1:
 
 	;move player
 	jsr PlayerTick
+	jsr PlayerTick
 	
 	;do action
+	inc counter
+	bne +
+	jmp *
++
 	
 	;cpu AI
 	

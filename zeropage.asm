@@ -49,6 +49,8 @@ object_x = 89
 object_y = 90
 rotation_speed = 91 
 
+counter = 92
+
 
 Keyboard_f1 = 160
 Keyboard_f3 = 161
