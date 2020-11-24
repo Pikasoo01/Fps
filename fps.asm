@@ -102,10 +102,10 @@ main_loop1:
 	jsr PlayerTick
 	
 	;do action
-	inc counter
-	bne +
-	jmp *
-+
+;	inc counter
+;	bne +
+;	jmp *
+;+
 	
 	;cpu AI
 	

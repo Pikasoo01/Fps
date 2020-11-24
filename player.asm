@@ -74,7 +74,7 @@ doOneStep:
 	inc playerPosX
     lda playerPosX          ;test if we hit pixel 4
     and #$7
-    cmp #4
+    cmp #7
     bne +
     lda playerPosX          ;we are on pix 4
     clc
@@ -87,7 +87,7 @@ doOneStep:
     beq +
     lda playerPosX          ;yes, stay in previous pixel
     and #$f8
-    ora #3
+    ora #6
     sta playerPosX
 +	jmp dos_doY
 
@@ -99,7 +99,7 @@ dos_negx:
 	dec playerPosX
     lda playerPosX          ;test if we hit pixel 4
     and #$7
-    cmp #4
+    cmp #1
     bne +
     lda playerPosX          ;we are on pix 4
     sec
@@ -112,7 +112,7 @@ dos_negx:
     beq +
     lda playerPosX          ;yes, stay in previous pixel
     and #$f8
-    ora #5
+    ora #2
     sta playerPosX
 +
 dos_doY:
@@ -126,7 +126,7 @@ dos_doY:
 	inc playerPosY
     lda playerPosY          ;test if we hit pixel 4
     and #$7
-    cmp #4
+    cmp #7
     bne +
     lda playerPosY          ;we are on pix 4
     clc
@@ -136,10 +136,28 @@ dos_doY:
     sta matrixPointX
     jsr getWall
     and #15                 ;do we have one?
+    bne dos_j41
+    lda matrixPointX
+    and #7
+    cmp #2
+    bcs dos_j21
+    dec matrixPointX
+    dec matrixPointX
+    jmp dos_j31
+dos_j21:
+    cmp #6
+    bcc +
+        ;add 8
+    inc matrixPointX
+    inc matrixPointX
+dos_j31:
+    jsr getWall
+    and #15                 ;do we have one?
     beq +
+dos_j41:
     lda playerPosY          ;yes, stay in previous pixel
     and #$f8
-    ora #3
+    ora #6
     sta playerPosY
 +	rts
 dos_negy:
@@ -150,7 +168,7 @@ dos_negy:
 	dec playerPosY
     lda playerPosY          ;test if we hit pixel 4
     and #$7
-    cmp #4
+    cmp #1
     bne +
     lda playerPosY          ;we are on pix 4
     sec
@@ -160,9 +178,27 @@ dos_negy:
     sta matrixPointX
     jsr getWall
     and #15                 ;do we have one?
+    bne dos_j4
+    lda matrixPointX
+    and #7
+    cmp #2
+    bcs dos_j2
+    dec matrixPointX
+    dec matrixPointX
+    jmp dos_j3
+dos_j2:
+    cmp #6
+    bcc +
+        ;add 8
+    inc matrixPointX
+    inc matrixPointX
+dos_j3:
+    jsr getWall
+    and #15                 ;do we have one?
     beq +
+dos_j4:
     lda playerPosY          ;yes, stay in previous pixel
     and #$f8
-    ora #5
+    ora #2
     sta playerPosY
 +   rts
