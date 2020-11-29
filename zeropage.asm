@@ -50,6 +50,8 @@ object_y = 90
 rotation_speed = 91 
 
 counter = 92
+LatessFrame = 93
+newFrame = 94
 
 
 Keyboard_f1 = 160

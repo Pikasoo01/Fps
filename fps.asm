@@ -91,23 +91,32 @@ setup
 	ldy #30
 	jsr PrintValue
 
+	jsr InitFrameCounter
 
         
 main_loop1:
 	;get key for motion
+
+	jsr GetFrameSkip
+	cpx #0
+	beq main_loop1
+	stx newFrame	;use it as frame count
+	txa
+	ldy #30
+	jsr PrintValue
+
 	jsr ScanKeys
 
+-
 	;move player
 	jsr PlayerTick
-	jsr PlayerTick
-	
+
 	;do action
-;	inc counter
-;	bne +
-;	jmp *
-;+
 	
 	;cpu AI
+
+	dec newFrame		;loop around until frame count is 0
+	bne -
 	
 	;draw
 	jsr Draw3dScreen
@@ -143,12 +152,13 @@ CopyFakeMap:
 	bne -
 	rts
 
+
 	
 !src "3dhelper.asm"
 !src "3d.asm"
 !src "sprite.asm"
 !src "2d.asm"
-!src "keyboard.asm"
+!src "sys64.asm"
 !src "player.asm"
 !src "data.asm"
 
